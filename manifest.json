@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "CryptoFiat",
-    "description": "Converts any fiat currencies displayed on a page (USD, EUR, AED, RMB, etc.) into your chosen cryptocurrency! (BTC, XMR, ETH, SOL, etc.)",
+    "description": "Converts any fiat currencies displayed on a page into your chosen cryptocurrency! (BTC, XMR, ETH, SOL)",
     "version": "1.0",
     "action": {
       "default_popup": "popup.html",
