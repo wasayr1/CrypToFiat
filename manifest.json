@@ -4,7 +4,7 @@
     "description": "Converts any fiat currencies displayed on a page (USD, EUR, AED, RMB, etc.) into your chosen cryptocurrency! (BTC, XMR, ETH, SOL, etc.)",
     "version": "1.0",
     "action": {
-      "default_popup": "hello.html",
+      "default_popup": "popup.html",
       "default_icon": "images/cryptofiat_icon_128.png"
     }
 }

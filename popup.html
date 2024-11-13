@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      width: 300px;
+      padding: 16px;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    select {
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    
+    .status {
+      font-size: 12px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h3>Choose your cryptocurrency</h3>
+    <select id="cryptoSelect">
+      <option value="BTC" selected>Bitcoin (BTC)</option>
+      <option value="XMR">Monero (XMR)</option>
+      <option value="ETH">Ethereum (ETH)</option>
+      <option value="SOL">Solana (SOL)</option>
+    </select>
+    <div id="status" class="status"></div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load saved preference
+      chrome.storage.sync.get(['preferredCrypto'], (result) => {
+        if (result.preferredCrypto) {
+          document.getElementById('cryptoSelect').value = result.preferredCrypto;
+        }
+      });
+
+      // Save when selection changes
+      document.getElementById('cryptoSelect').addEventListener('change', (e) => {
+        const selectedCrypto = e.target.value;
+        chrome.storage.sync.set({ preferredCrypto: selectedCrypto }, () => {
+          const status = document.getElementById('status');
+          status.textContent = 'Preference saved!';
+          setTimeout(() => {
+            status.textContent = '';
+          }, 1500);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
