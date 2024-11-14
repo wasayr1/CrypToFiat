@@ -3,7 +3,7 @@ console.log("USD to Sheep converter is running!");
 function replaceText(node) {
     if (node.nodeType == 3) {
 
-        const regex = /\$\s?\d+(?:,\d{3})*(?:\.\d{2})?/g;
+        const regex = /\$\s?\d+(?:,\d{3})*(?:\.\d{2})?(?:\s?USD)?/g;
         node.textContent = node.textContent.replace(regex, "sheep");
 
     } else {
