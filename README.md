@@ -1,4 +1,4 @@
-# CryptoFiat
+# CrypToFiat
 
 A Chromium extension that converts any instance of a fiat currency displayed on a page (USD, EUR, JPY, GBP, AED) into its equivalent real-time value for any chosen cryptocurrency (BTC, ETH, SOL, XMR). 
 
