@@ -19,28 +19,33 @@ function replaceText(node) {
     }
 }
 
-// Better way to handle the timing
-if (document.readyState === 'loading') {
-    // If the document is still loading, wait for DOMContentLoaded
-    document.addEventListener('DOMContentLoaded', () => {
-        console.log("DOM Content Loaded - starting replacement");
+chrome.storage.sync.get(['isEnabled'], (result) => {
+    if (result.isEnabled === false) {
+        
+        console.log('Extension is disabled, stopping conversion'); 
+        return;
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM Content Loaded - starting replacement");
+            replaceText(document.body);
+            startObserver();
+        });
+    } else {
+        console.log("Document already loaded - starting replacement");
         replaceText(document.body);
-    });
-} else {
-    // If the document is already loaded, run immediately
-    console.log("Document already loaded - starting replacement");
-    replaceText(document.body);
-}
+        startObserver();
+    }
+});
 
-const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-        mutation.addedNodes.forEach((node) => {
-            replaceText(node);
+function startObserver() {
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            mutation.addedNodes.forEach((node) => {
+                replaceText(node);
+            });
         });
     });
-});
-
-observer.observe(document.body, {
-    childList: true,
-    subtree: true
-});
+    observer.observe(document.body, { childList: true, subtree: true });
+}
