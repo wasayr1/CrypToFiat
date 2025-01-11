@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "CryptoFiat",
+    "name": "CrypToFiat",
     "description": "Converts any fiat currencies displayed on a page into your chosen cryptocurrency! (BTC, XMR, ETH, SOL)",
     "version": "1.0",
     "action": {
