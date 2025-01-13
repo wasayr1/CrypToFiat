@@ -1,10 +1,51 @@
-console.log("USD to Sheep converter is running!");
+console.log("USD to Sheep conversion is running!");
+
+// Object to store currency data for the page
+let pageData = {
+    currency: null, // 'USD', 'EUR', 'JPY', 'GBP', 'AED'
+    values: []
+};
+
+function detectCurrency(text) {
+    const patterns = {
+        USD: /\$\s?\d+/,
+        EUR: /€\s?\d+|EUR\s?\d+/,
+        GBP: /£\s?\d+/,
+        JPY: /¥\s?\d+|JPY\s?\d+/,
+        AED: /AED\s?\d+/
+    };
+
+    for (let [currency, pattern] of Object.entries(patterns)) {
+        if (pattern.test(text)) {
+            return currency;
+        }
+    }
+    return null;
+}
+
 
 function replaceText(node) {
     if (node.nodeType == 3) {
 
-        const regex = /\$\s?\d+(?:,\d{3})*(?:\.\d{2})?(?:\s?USD)?/g;
-        node.textContent = node.textContent.replace(regex, "sheep");
+        const text = node.textContent;
+        
+        // Detect currency if not already set
+        if (!pageData.currency) {
+            pageData.currency = detectCurrency(text);
+        }
+
+        // Combined regex for all supported currencies
+        const regex = /(?:\$|€|£|¥|AED)\s?\d+(?:,\d{3})*(?:\.\d{2})?|\d+(?:,\d{3})*(?:\.\d{2})?\s?(?:USD|EUR|GBP|JPY|AED)/g;
+        
+        // Store values before replacing
+        let match;
+        while ((match = regex.exec(text)) !== null) {
+            const numericValue = parseFloat(match[0].replace(/[^0-9.]/g, ''));
+            pageData.values.push(numericValue);
+        }
+
+        node.textContent = text.replace(regex, "sheep");
+
 
     } else {
 
