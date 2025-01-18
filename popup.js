@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const toggle = document.getElementById('extensionToggle');
+    const cryptoSelect = document.getElementById('cryptoSelect');
     console.log('Popup opened');
     
     // Check if chrome.storage API is available
@@ -17,6 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Initial storage state:', result.isEnabled);
         toggle.checked = result.isEnabled ?? true;
         console.log('Toggle state set to:', toggle.checked);
+
+        // Set crypto selection (default to bitcoin)
+        cryptoSelect.value = result.selectedCrypto ?? 'BTC';
+        console.log('Loaded crypto:', cryptoSelect.value);
     });
     
     // Handle toggle changes
