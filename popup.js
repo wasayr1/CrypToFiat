@@ -35,4 +35,13 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('State saved:', newState);
         });
     });
+
+    // Handle crypto selection changes
+    cryptoSelect.addEventListener('change', (e) => {
+        const selectedCrypto = e.target.value;
+        console.log('Crypto changed to:', selectedCrypto);
+        chrome.storage.sync.set({ selectedCrypto: selectedCrypto });
+    });
+
+
 });
