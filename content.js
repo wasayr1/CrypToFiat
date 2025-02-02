@@ -60,6 +60,11 @@ function replaceText(node) {
     }
 }
 
+// Function to get stored currency data
+function getPageCurrencyData() {
+    return pageData;
+}
+
 chrome.storage.sync.get(['isEnabled'], (result) => {
     if (result.isEnabled === false) {
         
