@@ -46,7 +46,7 @@ async function fetchBTCRates() {
 
 function convertToBTC(amount, currency) {
     if (!btcRates[currency]) return null;
-    return amount / btcRates[currency];
+    return (amount / btcRates[currency]).toFixed(8);
 }
 
 function replaceText(node) {
@@ -65,7 +65,7 @@ function replaceText(node) {
         // Store values before replacing
         let match;
         while ((match = regex.exec(text)) !== null) {
-            const numericValue = parseFloat(match[0].replace(/[^0-9.]/g, ''));
+            const numericValue = parseFloat(match[0].replace(/[^\d.]/g, ''));
             const btcValue = convertToBTC(numericValue, pageData.currency);
             pageData.values.push({
                 fiat: numericValue,
@@ -74,9 +74,9 @@ function replaceText(node) {
         }
 
         node.textContent = text.replace(regex, (match) => {
-            const numericValue = parseFloat(match.replace(/[^0-9.]/g, ''));
+            const numericValue = parseFloat(match.replace(/[^\d.]/g, '').replace(/,/g, ''));
             const btcValue = convertToBTC(numericValue, pageData.currency);
-            return btcValue ? `₿${btcValue.toFixed(8)}` : 'Loading...';
+            return btcValue ? `₿${btcValue}` : 'Loading...';
         });
 
 
