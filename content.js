@@ -1,10 +1,14 @@
-console.log("USD to Sheep conversion is running!");
+const COINGECKO_API_BASE = 'https://api.coingecko.com/api/v3';
+let btcRates = {};
+
+console.log("Fiat currency to BTC conversion is running!");
 
 // Object to store currency data for the page
 let pageData = {
     currency: null, // 'USD', 'EUR', 'JPY', 'GBP', 'AED'
     values: []
 };
+
 
 function detectCurrency(text) {
     const patterns = {
@@ -23,6 +27,27 @@ function detectCurrency(text) {
     return null;
 }
 
+async function fetchBTCRates() {
+    try {
+        const response = await fetch(`${COINGECKO_API_BASE}/simple/price?ids=bitcoin&vs_currencies=usd,eur,gbp,jpy,aed`);
+        const data = await response.json();
+        btcRates = {
+            USD: data.bitcoin.usd,
+            EUR: data.bitcoin.eur,
+            GBP: data.bitcoin.gbp,
+            JPY: data.bitcoin.jpy,
+            AED: data.bitcoin.aed
+        };
+        console.log('BTC rates updated:', btcRates);
+    } catch (error) {
+        console.error('Error fetching BTC rates:', error);
+    }
+}
+
+function convertToBTC(amount, currency) {
+    if (!btcRates[currency]) return null;
+    return amount / btcRates[currency];
+}
 
 function replaceText(node) {
     if (node.nodeType == 3) {
@@ -41,10 +66,18 @@ function replaceText(node) {
         let match;
         while ((match = regex.exec(text)) !== null) {
             const numericValue = parseFloat(match[0].replace(/[^0-9.]/g, ''));
-            pageData.values.push(numericValue);
+            const btcValue = convertToBTC(numericValue, pageData.currency);
+            pageData.values.push({
+                fiat: numericValue,
+                btc: btcValue
+            });
         }
 
-        node.textContent = text.replace(regex, "sheep");
+        node.textContent = text.replace(regex, (match) => {
+            const numericValue = parseFloat(match.replace(/[^0-9.]/g, ''));
+            const btcValue = convertToBTC(numericValue, pageData.currency);
+            return btcValue ? `₿${btcValue.toFixed(8)}` : 'Loading...';
+        });
 
 
     } else {
@@ -65,12 +98,15 @@ function getPageCurrencyData() {
     return pageData;
 }
 
-chrome.storage.sync.get(['isEnabled'], (result) => {
+chrome.storage.sync.get(['isEnabled'], async (result) => {
     if (result.isEnabled === false) {
         
         console.log('Extension is disabled, stopping conversion'); 
         return;
     }
+
+    await fetchBTCRates(); // Get initial rates
+    setInterval(fetchBTCRates, 60000); // Update rates every minute
     
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
