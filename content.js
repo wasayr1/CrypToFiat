@@ -27,7 +27,7 @@ function detectCurrency(text) {
 }
 
 const CRYPTO_CONFIG = {
-    'BTC': { id: 'bitcoin', symbol: '₿' },
+    'BTC': {id: 'bitcoin', symbol: '₿'},
     'ETH': {id: 'ethereum', symbol: 'Ξ'},
     'XMR': {id: 'monero', symbol: 'ɱ'},
     'SOL': {id: 'solana', symbol: '◎'}
