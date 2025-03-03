@@ -20,8 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Toggle state set to:', toggle.checked);
 
         // Set crypto selection (default to ethereum)
-        cryptoSelect.value = result.selectedCrypto ?? 'ETH';
-        console.log('Loaded crypto:', cryptoSelect.value);
+        chrome.storage.sync.get(['isEnabled', 'selectedCrypto'], (result) => {
+            toggle.checked = result.isEnabled ?? true;
+            cryptoSelect.value = result.selectedCrypto || 'ETH'; // Default to ETH
+        });
     });
     
     // Handle toggle changes
@@ -39,8 +41,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle crypto selection changes
     cryptoSelect.addEventListener('change', (e) => {
         const selectedCrypto = e.target.value;
-        console.log('Crypto changed to:', selectedCrypto);
-        chrome.storage.sync.set({ selectedCrypto: selectedCrypto });
+        chrome.storage.sync.set({ 
+          selectedCrypto: selectedCrypto 
+        }, () => {
+          console.log('Saved crypto:', selectedCrypto);
+          // Refresh conversions
+          chrome.runtime.sendMessage({ action: 'updateCrypto' });
+        });
     });
 
 
