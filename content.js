@@ -27,26 +27,39 @@ function detectCurrency(text) {
     return null;
 }
 
-async function fetchBTCRates() {
-    try {
-        const response = await fetch(`${COINGECKO_API_BASE}/simple/price?ids=bitcoin&vs_currencies=usd`);
-        const data = await response.json();
-        btcRates = {
-            USD: data.bitcoin.usd,
-        //    EUR: data.bitcoin.eur,
-        //    GBP: data.bitcoin.gbp,
-          //  JPY: data.bitcoin.jpy,
-            //AED: data.bitcoin.aed
-        };
-        console.log('BTC rates updated:', btcRates);
-    } catch (error) {
-        console.error('Error fetching BTC rates:', error);
-    }
+const CRYPTO_CONFIG = {
+    'BTC': { id: 'bitcoin', symbol: '₿' },
+    'ETH': {id: 'ethereum', symbol: 'Ξ'},
+    'XMR': {id: 'monero', symbol: 'ɱ'},
+    'SOL': {id: 'solana', symbol: '◎'}
+};
+
+let cryptoRates = {};
+
+async function fetchCryptoRates() {
+  try {
+    const ids = Object.values(CRYPTO_CONFIG).map(c => c.id).join(',');
+    const response = await fetch(
+      `${COINGECKO_API_BASE}/simple/price?ids=${ids}&vs_currencies=usd`
+    );
+    const data = await response.json();
+    
+    // Map all cryptocurrency rates
+    cryptoRates = Object.keys(data).reduce((acc, cryptoId) => {
+      const symbol = Object.keys(CRYPTO_CONFIG).find(k => CRYPTO_CONFIG[k].id === cryptoId);
+      acc[symbol] = data[cryptoId].usd;
+      return acc;
+    }, {});
+    
+    console.log('Crypto rates updated:', cryptoRates);
+  } catch (error) {
+    console.error('Error fetching crypto rates:', error);
+  }
 }
 
-function convertToBTC(amount, currency) {
-    if (!btcRates[currency]) return null;
-    return (amount / btcRates[currency]).toFixed(8);
+function convertToCrypto(amount, currency, selectedCrypto) {
+    if (!cryptoRates[selectedCrypto] || !cryptoRates[selectedCrypto]) return null;
+    return (amount / cryptoRates[selectedCrypto]).toFixed(8);
 }
 
 function replaceText(node) {
