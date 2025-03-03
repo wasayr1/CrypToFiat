@@ -1,5 +1,4 @@
 const COINGECKO_API_BASE = 'https://api.coingecko.com/api/v3';
-let btcRates = {};
 
 console.log("Fiat currency to BTC conversion is running!");
 
@@ -111,15 +110,15 @@ function getPageCurrencyData() {
     return pageData;
 }
 
-chrome.storage.sync.get(['isEnabled'], async (result) => {
+chrome.storage.sync.get(['isEnabled', 'selectedCrypto'], async (result) => {
     if (result.isEnabled === false) {
         
         console.log('Extension is disabled, stopping conversion'); 
         return;
     }
 
-    await fetchBTCRates(); // Get initial rates
-    setInterval(fetchBTCRates, 60000); // Update rates every minute
+    await fetchCryptoRates(); // Get initial rates
+    setInterval(fetchCryptoRates, 60000); // Update rates every minute
     
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
