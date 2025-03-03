@@ -13,10 +13,10 @@ let pageData = {
 function detectCurrency(text) {
     const patterns = {
         USD: /\$\s?\d+/,
-        EUR: /€\s?\d+|EUR\s?\d+/,
-        GBP: /£\s?\d+/,
-        JPY: /¥\s?\d+|JPY\s?\d+/,
-        AED: /AED\s?\d+/
+      //  EUR: /€\s?\d+|EUR\s?\d+/,
+        //GBP: /£\s?\d+/,
+        //JPY: /¥\s?\d+|JPY\s?\d+/,
+        //AED: /AED\s?\d+/
     };
 
     for (let [currency, pattern] of Object.entries(patterns)) {
@@ -29,14 +29,14 @@ function detectCurrency(text) {
 
 async function fetchBTCRates() {
     try {
-        const response = await fetch(`${COINGECKO_API_BASE}/simple/price?ids=bitcoin&vs_currencies=usd,eur,gbp,jpy,aed`);
+        const response = await fetch(`${COINGECKO_API_BASE}/simple/price?ids=bitcoin&vs_currencies=usd`);
         const data = await response.json();
         btcRates = {
             USD: data.bitcoin.usd,
-            EUR: data.bitcoin.eur,
-            GBP: data.bitcoin.gbp,
-            JPY: data.bitcoin.jpy,
-            AED: data.bitcoin.aed
+        //    EUR: data.bitcoin.eur,
+        //    GBP: data.bitcoin.gbp,
+          //  JPY: data.bitcoin.jpy,
+            //AED: data.bitcoin.aed
         };
         console.log('BTC rates updated:', btcRates);
     } catch (error) {
