@@ -11,7 +11,7 @@ let pageData = {
 
 function detectCurrency(text) {
     const patterns = {
-        USD: /\$\s?\d+/,
+        USD: /\$\s?\d+/
       //  EUR: /€\s?\d+|EUR\s?\d+/,
         //GBP: /£\s?\d+/,
         //JPY: /¥\s?\d+|JPY\s?\d+/,
@@ -63,7 +63,6 @@ function convertToCrypto(amount, currency, selectedCrypto) {
 
 function replaceText(node) {
     if (node.nodeType == 3) {
-
         const text = node.textContent;
         
         // Detect currency if not already set
@@ -71,29 +70,34 @@ function replaceText(node) {
             pageData.currency = detectCurrency(text);
         }
 
-        // Combined regex for all supported currencies
-        const regex = /(?:\$|€|£|¥|AED)\s?\d+(?:,\d{3})*(?:\.\d{2})?|\d+(?:,\d{3})*(?:\.\d{2})?\s?(?:USD|EUR|GBP|JPY|AED)/g;
-        
-        // Store values before replacing
-        let match;
-        while ((match = regex.exec(text)) !== null) {
-            const numericValue = parseFloat(match[0].replace(/[^\d.]/g, ''));
-            const btcValue = convertToBTC(numericValue, pageData.currency);
-            pageData.values.push({
-                fiat: numericValue,
-                btc: btcValue
-            });
-        }
+        // Combined regex different (good for USD only)
+        const regex = /(?:\$|USD)\s?\d{1,3}(?:,\d{3})*(?:\.\d{2})?|\d{1,3}(?:,\d{3})*(?:\.\d{2})?\s?(?:USD)/g;;
 
-        node.textContent = text.replace(regex, (match) => {
-            const numericValue = parseFloat(match.replace(/[^\d.]/g, '').replace(/,/g, ''));
-            const btcValue = convertToBTC(numericValue, pageData.currency);
-            return btcValue ? `₿${btcValue}` : 'Loading...';
+        // Get selected crypto from storage with ETH default
+        chrome.storage.sync.get(['selectedCrypto'], (result) => {
+            const selectedCrypto = result.selectedCrypto || 'ETH';
+            const cryptoData = CRYPTO_CONFIG[selectedCrypto];
+            
+            // Store values with crypto-agnostic structure
+            let match;
+            while ((match = regex.exec(text)) !== null) {
+                const numericValue = parseFloat(match[0].replace(/[^\d.]/g, ''));
+                const cryptoValue = convertToCrypto(numericValue, pageData.currency, selectedCrypto);
+                pageData.values.push({
+                    fiat: numericValue,
+                    [selectedCrypto]: cryptoValue
+                });
+            }
+
+            node.textContent = text.replace(regex, (match) => {
+                const numericValue = parseFloat(match.replace(/[^\d.]/g, '').replace(/,/g, ''));
+                const cryptoValue = convertToCrypto(numericValue, pageData.currency, selectedCrypto);
+                return cryptoValue ? `${cryptoData.symbol}${cryptoValue}` : 'Loading...';
+            });
         });
 
-
     } else {
-
+        // Keep existing child node handling
         if (node.nodeName !== "SCRIPT" && 
             node.nodeName !== "STYLE" && 
             node.nodeName !== "TEXTAREA") {
@@ -101,9 +105,9 @@ function replaceText(node) {
                 replaceText(node.childNodes[i]);
             }
         }
-
     }
 }
+
 
 // Function to get stored currency data
 function getPageCurrencyData() {
