@@ -19,8 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
         toggle.checked = result.isEnabled ?? true;
         console.log('Toggle state set to:', toggle.checked);
 
-        // Set crypto selection (default to bitcoin)
-        cryptoSelect.value = result.selectedCrypto ?? 'BTC';
+        // Set crypto selection (default to ethereum)
+        cryptoSelect.value = result.selectedCrypto ?? 'ETH';
         console.log('Loaded crypto:', cryptoSelect.value);
     });
     
